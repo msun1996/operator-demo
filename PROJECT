@@ -2,6 +2,10 @@ domain: dome.com
 layout: go.kubebuilder.io/v2
 projectName: operator-demo
 repo: operator-demo
+resources:
+- group: paas
+  kind: Instance
+  version: v1beta1
 version: 3-alpha
 plugins:
   go.sdk.operatorframework.io/v2-alpha: {}

@@ -24,6 +24,21 @@ operator-sdk init --domain=dome.com --license apache2 --owner "dome"
 └─hack
 ```
 ---
+```shell script
+#自定义CRD
+operator-sdk create api --group=paas --version=v1beta1 --kind=Instance
+```
+```shell script
+├─api
+│  └─v1beta1  # 定义operator crd 的字段信息
+├─config
+│  ├─crd  # 自定义operator的yaml
+│  │  └─patches
+│  ├─rbac # 更新加入 rbac 新的crd 的相关权限
+│  ├─samples # 部署对应crd实例yaml
+├─controllers  # 定义apply实例后，进入程序，程序代码操作
+└─hack
+```
 
 
 
