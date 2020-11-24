@@ -39,6 +39,73 @@ operator-sdk create api --group=paas --version=v1beta1 --kind=Instance
 ├─controllers  # 定义apply实例后，进入程序，程序代码操作
 └─hack
 ```
+# 安装CRD
+```shell script
+make install
+---
+/root/go/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+/root/go/bin/kustomize build config/crd | kubectl apply -f -
+customresourcedefinition.apiextensions.k8s.io/instances.paas.dome.com created
+---
+```
+#### 执行controller部分代码，相当于k8s schema部分代码
+```shell script
+make run # 使用本地的.kube/conf 文件，不需要绑定角色权限等
+---
+/root/go/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+go fmt ./...
+go vet ./...
+/root/go/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+go run ./main.go
+---
+```
+##### 自动生成 deepcopy 相关代码
+`更新zz_generated.deepcopy.go文件,在修改api里面对象字段后执行`
+```
+make generate
+/root/go/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+```
+##### 生成新的crd
+```
+make manifests
+/root/go/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+```
+#### 创建instance实例
+```shell script
+kubectl apply -f config/samples/paas_v1beta1_instance.yaml 
+instance.paas.dome.com/instance-sample created
+kubectl get instance
+NAME              AGE
+instance-sample   12s
+```
 
+### instance controller节点代码主要分析
+#### 触发条件
+```go
+func (r *MemcachedReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&paasv1beta1.Instance{}).
+		Owns(&appsv1.Deployment{}).
+		Complete(r)
+}
+//For() 主要监视里面定义资源的增删改
+//Owns() 辅助监视里面定义资源的增删改
+```
+# 触发执行方法
+```go
+func (r *InstanceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+	ctx := context.Background()
+	instance := &paasv1beta1.Instance{}
+	err := r.Get(ctx, req.NamespacedName, instance)
+}
+// req为触发该方法实例的信息，仅有 NamespacedName信息
+```
+
+### 镜像运行
+```shell script
+# 打包运行，打包方法是修改Makefile部分内容生成镜像包和yaml文件(打包部分内容需要外网环境)
+make package IMG="harbor.common.com:9443/library/paas:0.1"
+kubectl apply -f deploy/deploy.yaml
+```
 
 
