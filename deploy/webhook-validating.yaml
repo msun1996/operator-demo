@@ -1,0 +1,72 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "operator-webhook-admit"
+webhooks:
+  - name: "webhook-admit.paas.demo.com"
+    rules:
+      - apiGroups:   ["paas.demo.com"]
+        apiVersions: ["*"]
+        operations:  ["*"]
+        resources:   ["*"]
+        scope:       "*"
+    clientConfig:
+      service:
+        namespace: "default"
+        name: "lb-webhook"
+        path: /admit
+        port: 3443
+      caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lKQU1DWWNvaDI2c3l0TUEwR0NTcUdTSWIzRFFFQkN3VUFNQ0V4SHpBZEJnTlYKQkFNTUZteGlMWGRsWW1odmIyc3VaR1ZtWVhWc2RDNXpkbU13SGhjTk1qQXdPVEU1TURreE9ERTBXaGNOTkRndwpNakExTURreE9ERTBXakFoTVI4d0hRWURWUVFEREJac1lpMTNaV0pvYjI5ckxtUmxabUYxYkhRdWMzWmpNSUlCCklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFxaEhBd3IyQWsreS94QmxxT3ZTRFlZbWoKcWhVTmhCakxWaDhvNVd3eWhvK1U5djhLVHg5U3FDa0c2MVRMZVlmOGorUEIyK09Jd0Y4d2NicUcrUnlaaVNCVgpYZkFwdm5xTDlsczZoYTRjbWJRWk5UWHZUZFViWkFYYUlMMmtiTVR2SFNGNm1GeklYVUhxQkxHZUduL0JmcVd5ClpZM2sxMC9OOUx5R3Zta3NkMWduVi9JMU1Cbk9rK0FIUWNwaVhEZmhseWVtWWFZNm52RytZUmFNQnZQSVc0VkIKRXlVRDkzRExkUUlySkVjR29UR0JWMElERkNHR1d4RTd2UHpLSmtNRktvMEVjZWhqT05kd2lCbFBuVGY0alpmVgpEOEZyUXBmdTZTd2VpZDJEUmdrRThyTlhmN2lMYjkzTkp6RC8wRlEyZTN0RkM0c01iNkJqZ3g3ejNrZjdad0lECkFRQUJvMUF3VGpBZEJnTlZIUTRFRmdRVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdId1lEVlIwakJCZ3cKRm9BVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdEQVlEVlIwVEJBVXdBd0VCL3pBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUFrcHF6ZFliYkFmVG1UcWVMOFNPdzFpYjA5bUxzeVRsa2xnUEVqSE16dmVVYlF6VzFzV1NPCmZkOFgzSHdXM0drWkZzanVTK3ZOcVByNXBNc0ZmeW5zejhsN0pRZDVVcUtYcW5DeVFLZm1WVEJJVUhHS3JFM3MKQjJCVWQ1WDZKNWRYK213RUxvenRTS21tSGlpdjVodUY1Z2dFMEdKZmNpMDBaYXVhaGowL3AxVUJVUnR2TWx1egpXeWNvRFl3K2lyV1RWcEFmRFRHRGZhSWZ2MG80blpvNTl1dmllUTExQlJsK2NadDVQRUFaZisvVXgvUjdGcWdzCkRrZ0pCTWlvU0lQT0lJL1VVM3JlMEp2TkFjM1dhMzd6T05rbU43OXdScFRTWlJSQXRrY21kNHhjbnFJalA1SmEKTkxzMnhMTEZua0JSOWtTb0pvdXNkS3lTUVVndU5pTHlqZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+
+
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: "operator-webhook-mutate"
+webhooks:
+  - name: "webhook.mutate.paas.demo.com"
+    clientConfig:
+      service:
+        namespace: "default"
+        name: "lb-webhook"
+        path: /mutate
+        port: 3443
+      caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lKQU1DWWNvaDI2c3l0TUEwR0NTcUdTSWIzRFFFQkN3VUFNQ0V4SHpBZEJnTlYKQkFNTUZteGlMWGRsWW1odmIyc3VaR1ZtWVhWc2RDNXpkbU13SGhjTk1qQXdPVEU1TURreE9ERTBXaGNOTkRndwpNakExTURreE9ERTBXakFoTVI4d0hRWURWUVFEREJac1lpMTNaV0pvYjI5ckxtUmxabUYxYkhRdWMzWmpNSUlCCklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFxaEhBd3IyQWsreS94QmxxT3ZTRFlZbWoKcWhVTmhCakxWaDhvNVd3eWhvK1U5djhLVHg5U3FDa0c2MVRMZVlmOGorUEIyK09Jd0Y4d2NicUcrUnlaaVNCVgpYZkFwdm5xTDlsczZoYTRjbWJRWk5UWHZUZFViWkFYYUlMMmtiTVR2SFNGNm1GeklYVUhxQkxHZUduL0JmcVd5ClpZM2sxMC9OOUx5R3Zta3NkMWduVi9JMU1Cbk9rK0FIUWNwaVhEZmhseWVtWWFZNm52RytZUmFNQnZQSVc0VkIKRXlVRDkzRExkUUlySkVjR29UR0JWMElERkNHR1d4RTd2UHpLSmtNRktvMEVjZWhqT05kd2lCbFBuVGY0alpmVgpEOEZyUXBmdTZTd2VpZDJEUmdrRThyTlhmN2lMYjkzTkp6RC8wRlEyZTN0RkM0c01iNkJqZ3g3ejNrZjdad0lECkFRQUJvMUF3VGpBZEJnTlZIUTRFRmdRVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdId1lEVlIwakJCZ3cKRm9BVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdEQVlEVlIwVEJBVXdBd0VCL3pBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUFrcHF6ZFliYkFmVG1UcWVMOFNPdzFpYjA5bUxzeVRsa2xnUEVqSE16dmVVYlF6VzFzV1NPCmZkOFgzSHdXM0drWkZzanVTK3ZOcVByNXBNc0ZmeW5zejhsN0pRZDVVcUtYcW5DeVFLZm1WVEJJVUhHS3JFM3MKQjJCVWQ1WDZKNWRYK213RUxvenRTS21tSGlpdjVodUY1Z2dFMEdKZmNpMDBaYXVhaGowL3AxVUJVUnR2TWx1egpXeWNvRFl3K2lyV1RWcEFmRFRHRGZhSWZ2MG80blpvNTl1dmllUTExQlJsK2NadDVQRUFaZisvVXgvUjdGcWdzCkRrZ0pCTWlvU0lQT0lJL1VVM3JlMEp2TkFjM1dhMzd6T05rbU43OXdScFRTWlJSQXRrY21kNHhjbnFJalA1SmEKTkxzMnhMTEZua0JSOWtTb0pvdXNkS3lTUVVndU5pTHlqZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+    rules:
+      - apiGroups:   ["orchestrator.mesh.csd.jdcloud.com"]
+        apiVersions: ["*"]
+        operations:  ["*"]
+        resources:   ["*"]
+        scope:       "*"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: "operator-webhook-pods"
+webhooks:
+  - name: "webhook.pods.paas.demo.com"
+    clientConfig:
+      service:
+        namespace: "default"
+        name: "lb-webhook"
+        path: /pods
+        port: 3443
+      caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lKQU1DWWNvaDI2c3l0TUEwR0NTcUdTSWIzRFFFQkN3VUFNQ0V4SHpBZEJnTlYKQkFNTUZteGlMWGRsWW1odmIyc3VaR1ZtWVhWc2RDNXpkbU13SGhjTk1qQXdPVEU1TURreE9ERTBXaGNOTkRndwpNakExTURreE9ERTBXakFoTVI4d0hRWURWUVFEREJac1lpMTNaV0pvYjI5ckxtUmxabUYxYkhRdWMzWmpNSUlCCklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFxaEhBd3IyQWsreS94QmxxT3ZTRFlZbWoKcWhVTmhCakxWaDhvNVd3eWhvK1U5djhLVHg5U3FDa0c2MVRMZVlmOGorUEIyK09Jd0Y4d2NicUcrUnlaaVNCVgpYZkFwdm5xTDlsczZoYTRjbWJRWk5UWHZUZFViWkFYYUlMMmtiTVR2SFNGNm1GeklYVUhxQkxHZUduL0JmcVd5ClpZM2sxMC9OOUx5R3Zta3NkMWduVi9JMU1Cbk9rK0FIUWNwaVhEZmhseWVtWWFZNm52RytZUmFNQnZQSVc0VkIKRXlVRDkzRExkUUlySkVjR29UR0JWMElERkNHR1d4RTd2UHpLSmtNRktvMEVjZWhqT05kd2lCbFBuVGY0alpmVgpEOEZyUXBmdTZTd2VpZDJEUmdrRThyTlhmN2lMYjkzTkp6RC8wRlEyZTN0RkM0c01iNkJqZ3g3ejNrZjdad0lECkFRQUJvMUF3VGpBZEJnTlZIUTRFRmdRVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdId1lEVlIwakJCZ3cKRm9BVWJhZUhZQ3R2ZUVyOE9EYzkwNnRxQnJ5VEphTXdEQVlEVlIwVEJBVXdBd0VCL3pBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUFrcHF6ZFliYkFmVG1UcWVMOFNPdzFpYjA5bUxzeVRsa2xnUEVqSE16dmVVYlF6VzFzV1NPCmZkOFgzSHdXM0drWkZzanVTK3ZOcVByNXBNc0ZmeW5zejhsN0pRZDVVcUtYcW5DeVFLZm1WVEJJVUhHS3JFM3MKQjJCVWQ1WDZKNWRYK213RUxvenRTS21tSGlpdjVodUY1Z2dFMEdKZmNpMDBaYXVhaGowL3AxVUJVUnR2TWx1egpXeWNvRFl3K2lyV1RWcEFmRFRHRGZhSWZ2MG80blpvNTl1dmllUTExQlJsK2NadDVQRUFaZisvVXgvUjdGcWdzCkRrZ0pCTWlvU0lQT0lJL1VVM3JlMEp2TkFjM1dhMzd6T05rbU43OXdScFRTWlJSQXRrY21kNHhjbnFJalA1SmEKTkxzMnhMTEZua0JSOWtTb0pvdXNkS3lTUVVndU5pTHlqZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+    rules:
+      - apiGroups:   [""]
+        apiVersions: ["*"]
+        operations:  ["*"]
+        resources:   ["pods"]
+        scope:       "*"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5

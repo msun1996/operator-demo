@@ -52,6 +52,7 @@ uninstall: manifests kustomize
 deploy: manifests kustomize
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
+	$(KUSTOMIZE) build config/default > deploy/deploy.yaml
 
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: controller-gen

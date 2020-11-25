@@ -18,6 +18,8 @@ package main
 
 import (
 	"flag"
+	"operator-demo/pkg/pod"
+	"operator-demo/pkg/webhook"
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -29,6 +31,8 @@ import (
 
 	paasv1beta1 "operator-demo/api/v1beta1"
 	"operator-demo/controllers"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -80,6 +84,20 @@ func main() {
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
+
+	setupLog.Info("starting webhook")
+	wh := &webhook.Webhook{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("webhook"),
+		Scheme: mgr.GetScheme(),
+	}
+
+	wh.RegisterMutate(metav1.GroupVersionKind{Kind: "Pod", Group: ""}, pod.PodMutate)
+	setupLog.Info("register webhook server within operator controller manager")
+	if err := mgr.Add(wh); err != nil {
+		setupLog.Error(err, "problem add webhook server to operator controller manager")
+		os.Exit(1)
+	}
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

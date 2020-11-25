@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: lb-webhook
+spec:
+  ports:
+    - port: 3443
+      targetPort: 3443
+
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: lb-webhook
+subsets:
+  - addresses:
+      - ip: 172.17.0.1
+    ports:
+      - port: 3443
