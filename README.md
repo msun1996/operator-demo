@@ -108,4 +108,21 @@ make package IMG="harbor.common.com:9443/library/paas:0.1"
 kubectl apply -f deploy/deploy.yaml
 ```
 
+### webhook
+#### 创建webhook
+```shell script
+operator-sdk create webhook --group=paas --version=v1beta1 --kind=Instance --defaulting --programmatic-validation
+```
+#### 部署cert-manager(`https://book.kubebuilder.io/cronjob-tutorial/cert-manager.html`)
+```shell script
+# https://book.kubebuilder.io/cronjob-tutorial/cert-manager.html
+```
+```shell script
+# config/default/kustomization.yaml 文件关于webhook取消注解
+```
+#### 部署
+```shell script
+make docker-build docker-push IMG=harbor.common.com:9443/library/paas:0.1
+make deploy IMG=harbor.common.com:9443/library/paas:0.1
+```
 
